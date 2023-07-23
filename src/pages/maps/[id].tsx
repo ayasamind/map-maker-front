@@ -23,7 +23,11 @@ type MapParams = {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await axios.get(`${process.env.API_BASE_URL}/maps/1`);
+  const id = context.params?.id
+  if (!id) {
+    return { notFound: true };
+  }
+  const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
   const mapParams: MapParams = res.data
   return { props: mapParams }
 };
@@ -61,20 +65,13 @@ export default function ShowMap(mapParams: MapParams) {
 
   return (
     <Layout title="地図詳細">
-      <h1>{ mapParams.title }地図詳細</h1>
+      <h1>{ mapParams.title }</h1>
       <div>
         <p>{ mapParams.description }</p>
         <div className="sidebar">
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
         </div>  
         <div ref={mapContainer} className="map-container" />
-        <ul>
-          {
-            mapParams.pins.map((pin, index) => (
-              <li key={index}>{pin.title} ({pin.lat}, {pin.lon})</li>
-            ))
-          }
-        </ul>
         <Link href="/">トップに戻る</Link>
       </div>
     </Layout>

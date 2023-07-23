@@ -9,7 +9,7 @@ interface HeaderProps {
 const Header: React.FC = (props: HeaderProps) => {
   return (
     <header className={styles.header}>
-      <Image className={styles.Image} src="/images/logo.png" alt="my icon" width={64} height={64} />
+      <Image className={styles.Image} src="/images/logo.png" alt="my icon" width={35} height={35} />
       <h1 className={styles.h1}>LIGHT Map</h1>
     </header>
   )
