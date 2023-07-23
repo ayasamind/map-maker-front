@@ -1,0 +1,15 @@
+.mapIcon {
+    width: 30px;
+}
+
+.red {
+    filter: invert(44%) sepia(54%) saturate(7053%) hue-rotate(342deg) brightness(104%) contrast(99%);
+}
+
+.green {
+    filter: invert(97%) sepia(28%) saturate(4287%) hue-rotate(49deg) brightness(96%) contrast(112%);
+}
+
+.blue {
+    filter: invert(14%) sepia(98%) saturate(4990%) hue-rotate(245deg) brightness(103%) contrast(103%);
+}

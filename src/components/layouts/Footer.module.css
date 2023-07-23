@@ -1,0 +1,11 @@
+.footer {
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  color: rgb(250, 220, 0);
+  background: #153462;
+  width: 100%;
+  font-family: monospace;
+  position: fixed; /* 要素の位置を固定する */
+  bottom: 0; /* 基準の位置を画面の一番下に指定する */
+}
