@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXlhc2FtaW5kIiwiYSI6ImNsa2UydWozNzEwOW0zbHB1OW03b2NuNHYifQ.zIym42cNwKNhEd0LmIDl8w';
 
 type MapParams = {
+  id: number,
   title: String,
   description: String,
   center_lat: number,
@@ -48,7 +49,15 @@ export default function ShowMap(mapParams: MapParams) {
       zoom: zoom
     });
     for (const pin of mapParams.pins) {
-      new mapboxgl.Marker().setLngLat([pin.lon, pin.lat]).addTo(map.current);
+      new mapboxgl.Marker()
+        .setLngLat([pin.lon, pin.lat])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 }) // add popups
+            .setHTML(
+              `<h3>${pin.title}</h3><p>${pin.description}</p>`
+            )
+        )
+        .addTo(map.current);
     }
   });
 
