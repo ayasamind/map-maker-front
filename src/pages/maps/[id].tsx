@@ -28,9 +28,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!id) {
     return { notFound: true };
   }
-  const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
-  const mapParams: MapParams = res.data
-  return { props: mapParams }
+  try {
+    const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
+    const mapParams: MapParams = res.data
+    return { props: mapParams }
+  } catch (err) {
+    return err
+  }
 };
 
 export default function ShowMap(mapParams: MapParams) {
@@ -42,11 +46,14 @@ export default function ShowMap(mapParams: MapParams) {
 
   useEffect(() => {
     if (map.current) return;
+    setLng(mapParams.center_lon);
+    setLat(mapParams.center_lat);
+    setZoom(mapParams.zoom_level);
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLDivElement,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [lng, lat],
-      zoom: zoom
+      center: [mapParams.center_lon, mapParams.center_lat],
+      zoom: mapParams.zoom_level
     });
     for (const pin of mapParams.pins) {
       new mapboxgl.Marker()
