@@ -28,13 +28,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!id) {
     return { notFound: true };
   }
-  try {
-    const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
-    const mapParams: MapParams = res.data
-    return { props: mapParams }
-  } catch (err) {
-    return err
-  }
+  const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
+  const mapParams: MapParams = res.data
+  return { props: mapParams }
 };
 
 export default function ShowMap(mapParams: MapParams) {
