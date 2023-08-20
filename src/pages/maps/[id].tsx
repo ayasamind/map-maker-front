@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Layout from "@/components/layouts/Layout";
 import Link from "next/link";
-import axios from "@/libs/axios"
+import axios, { AxiosError } from "@/libs/axios"
 import { GetServerSideProps } from "next";
 import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXlhc2FtaW5kIiwiYSI6ImNsa2UydWozNzEwOW0zbHB1OW03b2NuNHYifQ.zIym42cNwKNhEd0LmIDl8w';
@@ -28,9 +28,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!id) {
     return { notFound: true };
   }
-  const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
-  const mapParams: MapParams = res.data
-  return { props: mapParams }
+  try {
+    const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
+    const mapParams: MapParams = res.data
+    return { props: mapParams }
+  } catch (error) {
+    const axiosError = error as AxiosError
+    if (axiosError.notFound) {
+      return { notFound: true };
+    }
+    throw error;
+  }
 };
 
 export default function ShowMap(mapParams: MapParams) {

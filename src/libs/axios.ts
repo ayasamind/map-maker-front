@@ -20,7 +20,8 @@ axios.interceptors.response.use(
         case 422:  
           return Promise.reject(error.response?.data);
         case 404:
-          return Promise.reject({ notFound: true});
+          console.log(error.response)
+          error.response.data.notFound = true
         case 500:
           return Promise.reject(error.response?.data);
         default:
