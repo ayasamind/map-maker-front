@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Layout from "@/components/layouts/Layout";
 import Link from "next/link";
-import axios, { AxiosError } from "@/libs/axios"
+import axios from "@/libs/axios"
+import { AxiosError } from "axios"
 import { GetServerSideProps } from "next";
 import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXlhc2FtaW5kIiwiYSI6ImNsa2UydWozNzEwOW0zbHB1OW03b2NuNHYifQ.zIym42cNwKNhEd0LmIDl8w';
@@ -34,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { props: mapParams }
   } catch (error) {
     const axiosError = error as AxiosError
-    if (axiosError.notFound) {
+    if (axiosError.response && axiosError.response.status === 404) {
       return { notFound: true };
     }
     throw error;

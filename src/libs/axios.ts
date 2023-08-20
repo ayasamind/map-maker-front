@@ -1,4 +1,4 @@
-import Axios from 'axios'
+import Axios, { AxiosError }  from 'axios'
 
 const axios = Axios.create({
     baseURL: process.env.API_BASE_URL,
@@ -20,8 +20,7 @@ axios.interceptors.response.use(
         case 422:  
           return Promise.reject(error.response?.data);
         case 404:
-          console.log(error.response)
-          error.response.data.notFound = true
+          return Promise.reject(error);
         case 500:
           return Promise.reject(error.response?.data);
         default:
