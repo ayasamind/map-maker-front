@@ -8,8 +8,8 @@ export interface HeadProps {
 const Head = (props: HeadProps) => {
   return (
     <DefaultHead>
-      <title>{'LIGHTの地図メーカーだよ' + (props.title != null ? ` | ${props.title}` : ' ')}</title>
-      <meta name="description" content={props.description ?? 'LIGHTの地図メーカーだよ'} />
+      <title>{'Map Maker' + (props.title != null ? ` | ${props.title}` : ' ')}</title>
+      <meta name="description" content={props.description ?? 'Map Maker'} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="icon" href="/images/logo.png" />
     </DefaultHead>

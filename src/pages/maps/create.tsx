@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Loading } from "@/contexts/LoadingContext";
 import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
+import { addDefaultControls } from "@/templates/MapBoxTemplate";
 import Layout from "@/components/layouts/Layout";
 import axios from "@/libs/axios"
 import Box from '@mui/material/Box';
@@ -49,6 +50,7 @@ export default function CreateRecordForm() {
       center: [lng, lat],
       zoom: zoom
     });
+    addDefaultControls(map.current);
   });
 
   useEffect(() => {

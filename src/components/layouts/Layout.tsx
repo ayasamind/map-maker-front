@@ -10,7 +10,8 @@ import { defaultPopup, getDisplyedPopup } from "@/templates/PopupTemplates";
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { AlertColor } from '@mui/material/Alert'; // 列挙型のインポート
+import { AlertColor } from '@mui/material/Alert';
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,

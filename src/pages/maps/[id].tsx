@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Layout from "@/components/layouts/Layout";
-import Link from "next/link";
 import axios from "@/libs/axios"
 import { AxiosError } from "axios"
 import { GetServerSideProps } from "next";
 import mapboxgl from "@/libs/mapbox"
+import { addDefaultControls } from "@/templates/MapBoxTemplate";
 
 type MapParams = {
   id: number,
@@ -63,13 +63,14 @@ export default function ShowMap(mapParams: MapParams) {
       new mapboxgl.Marker()
         .setLngLat([pin.lon, pin.lat])
         .setPopup(
-          new mapboxgl.Popup({ offset: 25 }) // add popups
+          new mapboxgl.Popup({ offset: 25 })
             .setHTML(
               `<h3>${pin.title}</h3><p>${pin.description}</p>`
             )
         )
         .addTo(map.current);
     }
+    addDefaultControls(map.current);
   });
 
   useEffect(() => {
