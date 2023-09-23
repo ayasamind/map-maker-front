@@ -15,7 +15,7 @@ const MarkerText = (props: MarkerComponentProps) =>
   <MapboxMarker
     latitude={props.coord.lat} longitude={props.coord.lon}
     offset={[0, -30]}
-    onClick={props.onClick}
+    // onClick={props.onClick}
   >
     {props.title}
   </MapboxMarker>

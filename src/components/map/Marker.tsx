@@ -22,7 +22,7 @@ interface MarkerComponentProps extends MarkerProps {
 const Marker = (props: MarkerComponentProps) => 
   <MapboxMarker
     latitude={props.coord.lat} longitude={props.coord.lon}
-    onClick={props.onClick}
+    // onClick={props.onClick}
     draggable={props.draggable}
     onDragStart={props.onDragStart}
     onDrag={props.onDrag}

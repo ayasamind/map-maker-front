@@ -78,7 +78,7 @@ const Map = (props: MapProps) => {
     }}
     mapStyle="mapbox://styles/mapbox/streets-v12"
     style={{ height: props.height, width: props.width }}
-    onClick={props.onClick}
+    // onClick={props.onClick}
     mapboxAccessToken={"pk.eyJ1IjoibGlnaHQtbGlnaHQiLCJhIjoiY2xlcnZ1N3B3MDBuMjN4cW9qeTFjdGNvciJ9.nf9szj3A2prwaz_2NHbuuQ"}
   >
     <NavigationControl position="bottom-right" showCompass={false} />
