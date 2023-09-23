@@ -1,7 +1,7 @@
 import Axios, { AxiosError }  from 'axios'
 
 const axios = Axios.create({
-    baseURL: process.env.API_BASE_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
     headers: {
         // 認証ができたら追記する
         // Authorization: `Bearer ${process.env.API_TOKEN}`,
