@@ -84,18 +84,18 @@ export default function CreateRecordForm() {
     try {
       setLoading(true);
       const res = await axios.post(`maps/create`, formData);
-      setPopup(getSuccssPopup("地図の作成に成功しました"));
+      setPopup(getSuccssPopup("Crated!"));
       router.push(`/maps/${res.data.map.id}`);
     } catch (error: any) {
       setErrors({ ...errors, ...error.errors });
       setLoading(false);
-      setPopup(getSuddenErrorPopup("地図の作成に失敗しました"));
+      setPopup(getSuddenErrorPopup("Failed to create"));
     }
   };
 
   return (
-    <Layout title="地図新規作成">
-      <h1>地図新規作成</h1>
+    <Layout title="Create Your Map">
+      <h3>Create Your Map</h3>
         <Box
           component="form"
           noValidate
@@ -106,7 +106,7 @@ export default function CreateRecordForm() {
             <TextField
               name="title"
               id="outlined-basic"
-              label="地図のタイトル"
+              label="Map Title"
               variant="outlined"
               margin="dense"
               fullWidth
@@ -119,7 +119,7 @@ export default function CreateRecordForm() {
             <TextField
               name="description"
               id="outlined-multiline-basic"
-              label="地図の概要"
+              label="Map Description"
               variant="outlined"
               multiline rows={4}
               margin="dense"
@@ -130,7 +130,7 @@ export default function CreateRecordForm() {
             />
           </div>
           <div className="sidebar">
-            経度: {lng} | 緯度: {lat} | ズームレベル: {zoom}
+            Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
           </div>
           <div ref={mapContainer} className="map-container" />
           <div>
@@ -141,7 +141,7 @@ export default function CreateRecordForm() {
               onClick={handleSubmit}
               loading={loading}
             >
-              作成
+              Create
             </LoadingButton>
           </div>
       </Box>

@@ -15,6 +15,7 @@
     "@mantine/hooks": "^6.0.9",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^1.0.1",
+    "@mui/icons-material": "^5.14.9",
     "@mui/lab": "^5.0.0-alpha.145",
     "@mui/material": "^5.14.10",
     "@react-stately/data": "^3.9.0",

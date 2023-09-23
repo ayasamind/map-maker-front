@@ -3,7 +3,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Head, { HeadProps } from "@/components/layouts/Head";
 import { useRouter } from 'next/router';
 import styles from "./Layout.module.css";
-import Footer from "./Footer"
 import Header from "./Header";
 import { Loading } from "@/contexts/LoadingContext";
 import { Popup } from "@/contexts/PopupContext";
@@ -84,7 +83,6 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
         </Snackbar>
         {loading && <LoadingSpinner />}
         <main className={styles.main}>{children}</main>
-        <Footer />
       </ThemeProvider>
     </>
   );

@@ -84,7 +84,7 @@ export default function ShowMap(mapParams: MapParams) {
   });
 
   return (
-    <Layout title="地図詳細">
+    <Layout title="Map Details">
       <h1>{ mapParams.title }</h1>
       <div>
         <p>{ mapParams.description }</p>
@@ -92,7 +92,6 @@ export default function ShowMap(mapParams: MapParams) {
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
         </div>
         <div ref={mapContainer} className="map-container" />
-        <Link href="/">トップに戻る</Link>
       </div>
     </Layout>
   )
