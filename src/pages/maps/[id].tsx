@@ -4,8 +4,7 @@ import Link from "next/link";
 import axios from "@/libs/axios"
 import { AxiosError } from "axios"
 import { GetServerSideProps } from "next";
-import mapboxgl from 'mapbox-gl';
-mapboxgl.accessToken = 'pk.eyJ1IjoiYXlhc2FtaW5kIiwiYSI6ImNsa2UydWozNzEwOW0zbHB1OW03b2NuNHYifQ.zIym42cNwKNhEd0LmIDl8w';
+import mapboxgl from "@/libs/mapbox"
 
 type MapParams = {
   id: number,
@@ -30,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { notFound: true };
   }
   try {
-    const res = await axios.get(`${process.env.API_BASE_URL}/maps/${id}`);
+    const res = await axios.get(`maps/${id}`);
     const mapParams: MapParams = res.data
     return { props: mapParams }
   } catch (error) {
@@ -56,7 +55,7 @@ export default function ShowMap(mapParams: MapParams) {
     setZoom(mapParams.zoom_level);
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLDivElement,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: process.env.NEXT_PUBLIC_MAPBOX_TEMPLATE,
       center: [mapParams.center_lon, mapParams.center_lat],
       zoom: mapParams.zoom_level
     });
@@ -91,7 +90,7 @@ export default function ShowMap(mapParams: MapParams) {
         <p>{ mapParams.description }</p>
         <div className="sidebar">
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>  
+        </div>
         <div ref={mapContainer} className="map-container" />
         <Link href="/">トップに戻る</Link>
       </div>
