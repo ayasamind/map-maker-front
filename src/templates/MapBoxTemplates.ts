@@ -8,6 +8,7 @@ const addDefaultControls = (map: mapboxgl.Map) => {
             accessToken: mapboxgl.accessToken,
             mapboxgl: mapboxgl,
             placeholder: "Search",
+            marker: false,
         }), "top-left"
     );
     const language = new MapboxLanguage({

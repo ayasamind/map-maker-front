@@ -3,25 +3,11 @@ import Layout from "@/components/layouts/Layout";
 import axios from "@/libs/axios"
 import { AxiosError } from "axios"
 import { GetServerSideProps } from "next";
-import mapboxgl from "@/libs/mapbox"
-import { addDefaultControls } from "@/templates/MapBoxTemplate";
-
-type MapParams = {
-  id: number,
-  title: String,
-  description: String,
-  center_lat: number,
-  center_lon: number,
-  zoom_level: number,
-  pins: [
-    {
-      title: String,
-      lat: number,
-      lon: number,
-      description: String,
-    }
-  ]
-}
+import Typography from '@mui/material/Typography';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useRouter } from 'next/router';
+import { MapParams } from '@/types/MapParams';
+import DefaultMap from '@/components/map/DefaultMap';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params?.id
@@ -42,57 +28,35 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function ShowMap(mapParams: MapParams) {
-  const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [lng, setLng] = useState(130.4017);
-  const [lat, setLat] = useState(33.5959);
-  const [zoom, setZoom] = useState(12);
-
-  useEffect(() => {
-    if (map.current) return;
-    setLng(mapParams.center_lon);
-    setLat(mapParams.center_lat);
-    setZoom(mapParams.zoom_level);
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current as HTMLDivElement,
-      style: process.env.NEXT_PUBLIC_MAPBOX_TEMPLATE,
-      center: [mapParams.center_lon, mapParams.center_lat],
-      zoom: mapParams.zoom_level
-    });
-    for (const pin of mapParams.pins) {
-      new mapboxgl.Marker()
-        .setLngLat([pin.lon, pin.lat])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
-            .setHTML(
-              `<h3>${pin.title}</h3><p>${pin.description}</p>`
-            )
-        )
-        .addTo(map.current);
-    }
-    addDefaultControls(map.current);
-  });
-
-  useEffect(() => {
-    if (!map.current) return;
-    map.current.on('move', () => {
-      if (map.current) {
-        setLng(parseFloat(map.current.getCenter().lng.toFixed(4)));
-        setLat(parseFloat(map.current.getCenter().lat.toFixed(4)));
-        setZoom(parseFloat(map.current.getZoom().toFixed(2)));
-      }
-    });
-  });
-
+  const router = useRouter();
   return (
     <Layout title="Map Details">
-      <h1>{ mapParams.title }</h1>
+      <h3>{ mapParams.title }</h3>
       <div>
-        <p>{ mapParams.description }</p>
-        <div className="sidebar">
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-        <div ref={mapContainer} className="map-container" />
+        <Typography variant="body2" color="text.secondary">
+          { mapParams.description }
+        </Typography>
+        <LoadingButton
+          style={{  margin: '2%' }}
+          variant="contained"
+          size="large"
+          onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
+        >
+          Edit Pins
+        </LoadingButton>
+        <LoadingButton
+          style={{  margin: '2%' }}
+          variant="contained"
+          size="large"
+          onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
+        >
+          Edit Map
+        </LoadingButton>
+        <DefaultMap
+          mapParams={mapParams}
+          canAddPin={false}
+          sidebar={true}
+        />
       </div>
     </Layout>
   )

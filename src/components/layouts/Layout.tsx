@@ -34,6 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
       return;
     }
     setPopup(defaultPopup);
+    setPopupDisplay(defaultPopup);
   };
 
   const { loading, setLoading } = useContext(Loading);

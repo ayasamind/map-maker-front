@@ -4,7 +4,6 @@ import axios from "@/libs/axios"
 import { GetServerSideProps } from "next";
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 
@@ -48,17 +47,16 @@ export default function Home(props: Props) {
           {props.maps.map((map) => (
             <li className="item" key={map.id}>
               <Link href={ `./maps/${map.id}` }>
-                <Card key={map.id} sx={{ maxWidth: 345 }}>
-                  <CardHeader
-                    title={ map.title }
-                  />
+                <Card key={map.id} sx={{ maxWidth: 250 }}>
                   <CardMedia
                     component="img"
                     height="200"
                     image="/images/default.png"
-                    alt="Paella dish"
                   />
                   <CardContent>
+                    <Typography variant="subtitle1" component="div">
+                      { map.title }
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">
                       { map.description }
                     </Typography>

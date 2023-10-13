@@ -89,10 +89,6 @@ a {
   text-decoration: none;
 }
 
-.map-container {
-  height: 700px;
-}
-
 .sidebar {
   background-color: rgba(35, 55, 75, 0.9);
   color: #fff;
@@ -113,7 +109,7 @@ li.item {
 	font-size: 48px;
 	color: #fff;
   padding: 5px;
-}	
+}
 
 /* body {
   color: rgb(var(--foreground-rgb));

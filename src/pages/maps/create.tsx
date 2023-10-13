@@ -1,78 +1,33 @@
-import React, { useRef, useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { Loading } from "@/contexts/LoadingContext";
 import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
-import { addDefaultControls } from "@/templates/MapBoxTemplate";
 import Layout from "@/components/layouts/Layout";
 import axios from "@/libs/axios"
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
-import mapboxgl from "@/libs/mapbox"
+import DefaultMap from '@/components/map/DefaultMap';
+import { MapFormParams } from '@/types/MapParams';
+import { defaultMapErrors } from '@/templates/ErrorTemplates';
 
 export default function CreateRecordForm() {
   const router = useRouter();
-  const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [lng, setLng] = useState(130.4017);
-  const [lat, setLat] = useState(33.5959);
-  const [zoom, setZoom] = useState(12);
-
   const { loading, setLoading } = useContext(Loading);
   const { setPopup } = useContext(Popup);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    center_lat: lat,
-    center_lon: lng,
-    zoom_level: zoom,
+    center_lat: 33.5959,
+    center_lon: 130.4017,
+    zoom_level: 12,
+    pins: [],
   });
 
-  const defaultErrors = {
-    title: '',
-    description: '',
-    center_lat: '',
-    center_lon: '',
-    zoom_level: '',
-  }
+  const defaultErrors = defaultMapErrors;
 
   const [errors, setErrors] = useState(defaultErrors);
-
-  useEffect(() => {
-    if (map.current) return;
-    setLng(formData.center_lat);
-    setLat(formData.center_lon);
-    setZoom(formData.zoom_level);
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current as HTMLDivElement,
-      style: process.env.NEXT_PUBLIC_MAPBOX_TEMPLATE,
-      center: [lng, lat],
-      zoom: zoom
-    });
-    addDefaultControls(map.current);
-  });
-
-  useEffect(() => {
-    if (!map.current) return;
-    map.current.on('move', () => {
-      if (map.current) {
-        let lng = parseFloat(map.current.getCenter().lng.toFixed(4))
-        let lat =parseFloat(map.current.getCenter().lat.toFixed(4));
-        let zoom = parseFloat(map.current.getZoom().toFixed(2));
-        setFormData({
-          ...formData,
-          center_lat: lat,
-          center_lon: lng,
-          zoom_level: zoom,
-        });
-        setLng(lng);
-        setLat(lat);
-        setZoom(zoom);
-      }
-    });
-  });
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -86,7 +41,7 @@ export default function CreateRecordForm() {
     try {
       setLoading(true);
       const res = await axios.post(`maps/create`, formData);
-      setPopup(getSuccssPopup("Crated!"));
+      setPopup(getSuccssPopup("Created!"));
       router.push(`/maps/${res.data.map.id}`);
     } catch (error: any) {
       setErrors({ ...errors, ...error.errors });
@@ -131,10 +86,12 @@ export default function CreateRecordForm() {
               helperText={errors.description}
             />
           </div>
-          <div className="sidebar">
-            Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-          </div>
-          <div ref={mapContainer} className="map-container" />
+          <DefaultMap
+            mapParams={formData}
+            canAddPin={false}
+            handleMapChange={(mapParams: MapFormParams) => setFormData(mapParams)}
+            sidebar={true}
+          />
           <div>
             <LoadingButton
               style={{ width: '100%', marginTop: '2%' }}
