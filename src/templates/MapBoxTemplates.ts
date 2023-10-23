@@ -16,6 +16,7 @@ const addDefaultControls = (map: mapboxgl.Map) => {
     });
     map.addControl(language);
     map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.FullscreenControl());
     return map
 }
 

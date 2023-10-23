@@ -1,27 +1,37 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { addDefaultControls } from "@/templates/MapBoxTemplates";
 import { MapParams } from '@/types/MapParams';
 import mapboxgl from "@/libs/mapbox"
 import delay from '@/libs/deplay';
+import { MapState } from "@/contexts/MapStateContext";
 
 export default function DefaultMap(props: any) {
-  const { mapParams, canAddPin, handleMapChange, sidebar, height, formData, updateFormData, index } = props;
+  const { mapParams, handleMapChange, sidebar, height, formData, updateFormData, index } = props;
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const { mapState, setMapState } = useContext(MapState);
   const [lng, setLng] = useState(mapParams.center_lon);
   const [lat, setLat] = useState(mapParams.center_lat);
   const [zoom, setZoom] = useState(mapParams.zoom_level);
 
   useEffect(() => {
+    if (map.current) {
+      if (mapState.canAddPin) {
+        setAddPinEvent();
+      } else {
+        removeAddPinEvent();
+      }
+    }
+    
     function setAddPinEvent() {
       if (map.current) {
-        map.current.once('click', (e) => {
-          if (map.current) {
-            if (canAddPin) {
-              addPin(e);
-            }
-          }
-        });
+        map.current.once('click', addPin);
+      }
+    }
+
+    function removeAddPinEvent() {
+      if (map.current) {
+        map.current.off('click', addPin);
       }
     }
 
@@ -38,6 +48,7 @@ export default function DefaultMap(props: any) {
           await delay(10)
           setAddPinEvent();
         });
+        setMapState({ canAddPin: false });
       }
     }
 
@@ -60,7 +71,6 @@ export default function DefaultMap(props: any) {
           .addTo(map.current);
       }
       addDefaultControls(map.current);
-      setAddPinEvent();
     }
 
     map.current.on('move', () => {
@@ -81,12 +91,12 @@ export default function DefaultMap(props: any) {
         }
       }
     });
-  }, [canAddPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams]);
+  }, [setMapState, mapState.canAddPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams, index, updateFormData]);
 
   return (
     <>
       { sidebar && <div className="sidebar">Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}</div>}
-      <div ref={mapContainer} style={{ height: height ?? '600px' }} />
+      <div ref={mapContainer} style={{ height: height ?? '350px' }} />
     </>
   )
 }

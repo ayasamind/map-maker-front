@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import Layout from "@/components/layouts/Layout";
 import axios from "@/libs/axios"
 import { AxiosError } from "axios"
@@ -8,6 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'next/router';
 import { MapParams } from '@/types/MapParams';
 import DefaultMap from '@/components/map/DefaultMap';
+import Grid from '@mui/material/Unstable_Grid2';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params?.id
@@ -33,30 +34,38 @@ export default function ShowMap(mapParams: MapParams) {
     <Layout title="Map Details">
       <h3>{ mapParams.title }</h3>
       <div>
-        <Typography variant="body2" color="text.secondary">
-          { mapParams.description }
-        </Typography>
-        <LoadingButton
-          style={{  margin: '2%' }}
-          variant="contained"
-          size="large"
-          onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
-        >
-          Edit Pins
-        </LoadingButton>
-        <LoadingButton
-          style={{  margin: '2%' }}
-          variant="contained"
-          size="large"
-          onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
-        >
-          Edit Map
-        </LoadingButton>
-        <DefaultMap
-          mapParams={mapParams}
-          canAddPin={false}
-          sidebar={true}
-        />
+        <Grid container spacing={2}>
+          <Grid xs={12} md={6}>
+            <Typography variant="body2" color="text.secondary">
+              { mapParams.description }
+            </Typography>
+          </Grid>
+          <Grid xs={12} md={6} style={{ textAlign: 'right' }}>
+            <LoadingButton
+              style={{  margin: '2%' }}
+              variant="contained"
+              size="large"
+              onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
+            >
+              Edit Pins
+            </LoadingButton>
+            {/* <LoadingButton
+              style={{  margin: '2%' }}
+              variant="contained"
+              size="large"
+              onClick={() => router.push(`/maps/${mapParams.id}/pins/edit`)}
+            >
+              Edit Map
+            </LoadingButton> */}
+          </Grid>
+          <Grid xs={12}>
+            <DefaultMap
+              mapParams={mapParams}
+              canAddPin={false}
+              sidebar={false}
+            />
+          </Grid>
+        </Grid>
       </div>
     </Layout>
   )
