@@ -12,9 +12,11 @@ import DefaultMap from '@/components/map/DefaultMap';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Loading } from "@/contexts/LoadingContext";
 import { MapState } from "@/contexts/MapStateContext";
+import { defaultMapState, canAddPinMapState } from "@/templates/MapStateTemplates";
 import { defaultPinErrors } from '@/templates/ErrorTemplates';
 import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
+import Alert from '@mui/material/Alert';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params?.id
@@ -40,20 +42,22 @@ export default function ShowMap(mapParams: MapParams) {
   const mapId = id ? Number(id) : 0;
   const [errors, setErrors] = useState<{ map_id: string, pins: { title: string, description: string, lon: string, lat: string }[] }>(defaultPinErrors);
   const [screenType, setScreenType] = useState('start');
+  const [seed, setSeed] = useState(1);
+  const [pinIndex, setPinIndex] = useState(0);
   const { loading, setLoading } = useContext(Loading);
   const { mapState, setMapState } = useContext(MapState);
   const { setPopup } = useContext(Popup);
   const [formData, setFormData] = useState<{ map_id: number, pins: { title: string, description: string, lon: number|null, lat: number|null }[] }>({
     map_id: mapId,
-    pins: [{ title: '', description: '', lon: null, lat: null }]
+    pins: []
   });
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updatedFormData = {
       map_id: formData.map_id,
       pins: formData.pins
     };
-    updatedFormData.pins[index] = {
-      ...updatedFormData.pins[index],
+    updatedFormData.pins[pinIndex] = {
+      ...updatedFormData.pins[pinIndex],
       [e.target.name]: e.target.value,
     };
     setFormData(updatedFormData);
@@ -74,8 +78,8 @@ export default function ShowMap(mapParams: MapParams) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     setErrors(defaultPinErrors);
-    console.log(errors);
     e.preventDefault();
+    console.log(formData)
 
     try {
       setLoading(true);
@@ -90,13 +94,50 @@ export default function ShowMap(mapParams: MapParams) {
   }
 
   const ShowAddPinScreen = () => {
+    formData.pins.push({
+      title: '',
+      description: '',
+      lon: null,
+      lat: null,
+    })
+    errors.pins.push({
+      title: '',
+      description: '',
+      lon: '',
+      lat: '',
+    })
+    setPinIndex(formData.pins.length - 1)
     setScreenType('add')
-    setMapState({ canAddPin: true })
+    setMapState(canAddPinMapState)
   }
 
   const ShowStartScreen = () => {
+    setSeed(Math.random());
     setScreenType('start')
-    setMapState({ canAddPin: false })
+    setMapState(defaultMapState)
+  }
+
+  const addPin = async () => {
+    setErrors(defaultPinErrors);
+    let error = null;
+    if (formData.pins[pinIndex].lon === null || formData.pins[pinIndex].lat === null) {
+      error = true;
+      setErrors({ ...errors, pins: [{ ...errors.pins[pinIndex], lon: 'ピンを指定してください' }] });
+    }
+    if (formData.pins[pinIndex].title === '') {
+      error = true;
+      setErrors({ ...errors, pins: [{ ...errors.pins[pinIndex], title: 'タイトルは必須です' }] });
+    }
+    if (error) {
+      return;
+    }
+    mapParams.pins.push({
+      title: formData.pins[pinIndex].title,
+      description: formData.pins[pinIndex].description,
+      lon: formData.pins[pinIndex].lon ?? 0,
+      lat: formData.pins[pinIndex].lat ?? 0,
+    })
+    ShowStartScreen();
   }
 
   return (
@@ -115,8 +156,12 @@ export default function ShowMap(mapParams: MapParams) {
                 height="300px"
                 formData={formData}
                 updateFormData={getMakerData}
-                index={0}
-            />
+                key={seed}
+                index={pinIndex}
+              />
+              { errors.pins[pinIndex] ? errors.pins[pinIndex].lon !== '' &&
+                <Alert severity="error">{ errors.pins[pinIndex].lon }</Alert>
+              : null}
             </Grid>
             <Grid xs={12} md={6}>
               {screenType === 'start' &&
@@ -131,15 +176,16 @@ export default function ShowMap(mapParams: MapParams) {
               }
               {screenType === 'add' &&
                 <TextField
+                  required
                   name="title"
                   id="outlined-basic"
                   label="Pin Title"
                   variant="outlined"
                   margin="dense"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 0)}
-                  error={errors.pins[0].title !== ''}
-                  helperText={errors.pins[0].title}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                  error={errors.pins[pinIndex] ? errors.pins[pinIndex].title !== '' : false}
+                  helperText={errors.pins[pinIndex] ? errors.pins[pinIndex].title : ''}
                 />
               }
               {screenType === 'add' &&
@@ -151,33 +197,47 @@ export default function ShowMap(mapParams: MapParams) {
                   multiline rows={4}
                   margin="dense"
                   fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 0)}
-                  error={errors.pins[0].description !== ''}
-                  helperText={errors.pins[0].description}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                  error={errors.pins[pinIndex] ? errors.pins[pinIndex].description !== '' : false}
+                  helperText={errors.pins[pinIndex] ? errors.pins[pinIndex].description : ''}
                 />
               }
               {screenType === 'add' &&
-                <LoadingButton
-                  style={{ width: '100%', marginTop: '2%' }}
-                  variant="contained"
-                  size="large"
-                  onClick={ShowStartScreen}
-                  loading={loading}
-                >
-                  Cancel
-                </LoadingButton>
+                <Grid xs={12} md={6}>
+                  <LoadingButton
+                    style={{ width: '100%', marginTop: '2%' }}
+                    variant="contained"
+                    size="large"
+                    onClick={addPin}
+                    loading={loading}
+                  >
+                    Add
+                  </LoadingButton>
+                  <LoadingButton
+                    style={{ width: '100%', marginTop: '2%' }}
+                    variant="contained"
+                    size="large"
+                    onClick={ShowStartScreen}
+                    loading={loading}
+                    color="error"
+                  >
+                    Cancel
+                  </LoadingButton>
+                </Grid>
               }
             </Grid>
             <Grid xs={12}>
+            {screenType === 'start' &&
               <LoadingButton
-                style={{ width: '100%', marginTop: '2%' }}
-                variant="contained"
-                size="large"
-                onClick={handleSubmit}
-                loading={loading}
-              >
-                Add / Edit Pins
-              </LoadingButton>
+                  style={{ width: '100%', marginTop: '2%' }}
+                  variant="contained"
+                  size="large"
+                  onClick={handleSubmit}
+                  loading={loading}
+                >
+                  Save
+                </LoadingButton>
+            }
             </Grid>
           </Grid>
       </Box>

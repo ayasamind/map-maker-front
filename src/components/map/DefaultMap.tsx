@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import { addDefaultControls } from "@/templates/MapBoxTemplates";
-import { MapParams } from '@/types/MapParams';
 import mapboxgl from "@/libs/mapbox"
 import delay from '@/libs/deplay';
 import { MapState } from "@/contexts/MapStateContext";
@@ -22,7 +21,7 @@ export default function DefaultMap(props: any) {
         removeAddPinEvent();
       }
     }
-    
+
     function setAddPinEvent() {
       if (map.current) {
         map.current.once('click', addPin);

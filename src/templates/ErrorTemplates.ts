@@ -8,15 +8,7 @@ const defaultMapErrors = {
 
 const defaultPinErrors = {
     map_id: '',
-    pins: [
-        {
-            title: '',
-            description: '',
-            lat: '',
-            lon: '',
-        }
-    ]
+    pins: []
 }
 
 export { defaultMapErrors, defaultPinErrors }
-
