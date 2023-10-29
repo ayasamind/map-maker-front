@@ -7,6 +7,7 @@ export type MapParams = {
   zoom_level: number,
   pins: [
     {
+      id: number|null,
       title: String,
       lat: number,
       lon: number,

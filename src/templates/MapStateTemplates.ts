@@ -1,9 +1,16 @@
 const defaultMapState = {
     canAddPin: false,
+    canEditPin: false,
 }
 
 const canAddPinMapState = {
     canAddPin: true,
+    canEditPin: false,
 }
 
-export { defaultMapState, canAddPinMapState }
+const editPinMapState = {
+    canAddPin: false,
+    canEditPin: true,
+}
+
+export { defaultMapState, canAddPinMapState, editPinMapState }

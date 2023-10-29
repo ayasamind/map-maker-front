@@ -3,15 +3,18 @@ import { addDefaultControls } from "@/templates/MapBoxTemplates";
 import mapboxgl from "@/libs/mapbox"
 import delay from '@/libs/deplay';
 import { MapState } from "@/contexts/MapStateContext";
+import { LngLat } from 'react-map-gl';
+import { forEachChild } from 'typescript';
 
 export default function DefaultMap(props: any) {
-  const { mapParams, handleMapChange, sidebar, height, formData, updateFormData, index } = props;
+  const { mapParams, handleMapChange, sidebar, height, formData, updateFormData, index, sendPinData } = props;
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const { mapState, setMapState } = useContext(MapState);
   const [lng, setLng] = useState(mapParams.center_lon);
   const [lat, setLat] = useState(mapParams.center_lat);
   const [zoom, setZoom] = useState(mapParams.zoom_level);
+  const [markers, setMarkers] = useState<any[]>([]);
 
   useEffect(() => {
     if (map.current) {
@@ -19,6 +22,22 @@ export default function DefaultMap(props: any) {
         setAddPinEvent();
       } else {
         removeAddPinEvent();
+      }
+
+      if (mapState.canEditPin) {
+        markers.forEach((existMarker, index) => {
+          const lon = existMarker.makerObject._lngLat.lng;
+          const lat = existMarker.makerObject._lngLat.lat;
+          if (map.current) {
+            const marker = new mapboxgl.Marker()
+              .setLngLat([lon, lat])
+              .addTo(map.current);
+            marker.getElement().addEventListener('click', () => {
+              sendPinData(markers[index], index);
+            });
+          }
+        })
+        markers.map(maker => maker.makerObject.remove());
       }
     }
 
@@ -47,6 +66,7 @@ export default function DefaultMap(props: any) {
           await delay(10)
           setAddPinEvent();
         });
+        setMarkers([...markers, marker]);
         setMapState({ canAddPin: false });
       }
     }
@@ -58,8 +78,9 @@ export default function DefaultMap(props: any) {
         center: [mapParams.center_lon, mapParams.center_lat],
         zoom: mapParams.zoom_level
       });
+      const makerList: any[] = [];
       for (const pin of mapParams.pins) {
-        new mapboxgl.Marker()
+        const marker = new mapboxgl.Marker()
           .setLngLat([pin.lon, pin.lat])
           .setPopup(
             new mapboxgl.Popup({ offset: 25 })
@@ -68,7 +89,14 @@ export default function DefaultMap(props: any) {
               )
           )
           .addTo(map.current);
+        makerList.push({
+          makerObject: marker,
+          id: pin.id,
+          title: pin.title,
+          description: pin.description,
+        });
       }
+      setMarkers(makerList);
       addDefaultControls(map.current);
     }
 
@@ -90,7 +118,7 @@ export default function DefaultMap(props: any) {
         }
       }
     });
-  }, [setMapState, mapState.canAddPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams, index, updateFormData]);
+  }, [formData, setMapState, markers, mapState.canAddPin, mapState.canEditPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams, index, updateFormData]);
 
   return (
     <>
