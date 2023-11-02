@@ -42,7 +42,9 @@ export default function Home(props: Props) {
   return (
     <Layout>
       <div>
-        <h4>Recently Created Maps</h4>
+        <Typography variant="h5" gutterBottom>
+          Recently Created Maps
+        </Typography>
         <ul className="horizontal-list">
           {props.maps.map((map) => (
             <li className="item" key={map.id}>

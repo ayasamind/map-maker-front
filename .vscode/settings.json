@@ -6,6 +6,7 @@
         "editor.detectIndentation": false,
         "editor.tabSize": 2,
         "editor.insertSpaces": true,
+        "editor.defaultFormatter": "vscode.typescript-language-features",
     },
     "[markdown]": {
         "editor.detectIndentation": false,

@@ -17,6 +17,7 @@ import { defaultPinErrors } from '@/templates/ErrorTemplates';
 import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params?.id
@@ -224,7 +225,9 @@ export default function ShowMap(mapParams: MapParams) {
 
   return (
     <Layout title="Edit Pins">
-      <h3>Add / Edit Pins</h3>
+      <Typography variant="h5" gutterBottom>
+        Add / Edit Pins
+      </Typography>
         <Box
           component="form"
           noValidate

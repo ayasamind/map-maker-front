@@ -17,7 +17,7 @@ axios.interceptors.response.use(
     (response) => response, // 成功時の処理 
     (error) => { // エラー時の処理
       switch (error.response?.status) {
-        case 422:  
+        case 422:
           return Promise.reject(error.response?.data);
         case 404:
           return Promise.reject(error);

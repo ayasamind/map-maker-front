@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import { addDefaultControls } from "@/templates/MapBoxTemplates";
 import mapboxgl from "@/libs/mapbox"
-import delay from '@/libs/deplay';
+import delay from '@/libs/delay';
 import { MapState } from "@/contexts/MapStateContext";
 import { LngLat } from 'react-map-gl';
 import { forEachChild } from 'typescript';

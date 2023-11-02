@@ -11,6 +11,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DefaultMap from '@/components/map/DefaultMap';
 import { MapFormParams } from '@/types/MapParams';
 import { defaultMapErrors } from '@/templates/ErrorTemplates';
+import Typography from '@mui/material/Typography';
 
 export default function CreateRecordForm() {
   const router = useRouter();
@@ -52,7 +53,9 @@ export default function CreateRecordForm() {
 
   return (
     <Layout title="Create Your Map">
-      <h3>Create Your Map</h3>
+      <Typography variant="h5" gutterBottom>
+        Create Your Map
+      </Typography>
         <Box
           component="form"
           noValidate

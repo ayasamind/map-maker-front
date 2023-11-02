@@ -32,7 +32,9 @@ export default function ShowMap(mapParams: MapParams) {
   const router = useRouter();
   return (
     <Layout title="Map Details">
-      <h3>{ mapParams.title }</h3>
+       <Typography variant="h5" gutterBottom>
+        { mapParams.title }
+      </Typography>
       <div>
         <Grid container spacing={2}>
           <Grid xs={12} md={6}>
