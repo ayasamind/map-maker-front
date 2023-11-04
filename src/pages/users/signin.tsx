@@ -7,65 +7,69 @@ import Image from 'next/image'
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithRedirect, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
 import axios from "@/libs/axios"
-import useAuthAxios from "@/libs/useAuthAxios";
 import { Popup } from "@/contexts/PopupContext";
 import { getSuddenSuccessPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
+import { AxiosResponse, AxiosError } from 'axios'
 
 export default function Signin() {
     const { setLoading } = useContext(Loading);
     const { auth, setAuth } = useContext(Auth);
     const { setPopup } = useContext(Popup);
-    const authAxios = useAuthAxios();
 
     const signInWithGoogle = async () => {
       setLoading(true);
       const provider = new GoogleAuthProvider();
-      signInWithPopup(firebaseAuth, provider)
-        .then(async (result) => {
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          if (!credential) {
-            throw new Error("credential is null");
-          }
-          try {
-            const idToken = await result.user.getIdToken(); // アクセストークンを取得
-            const response = await axios.get("/users/me", {
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            });
-            setAuth({
-              ...auth,
-              user: {
-                name: response.data.user.name,
-                email: response.data.user.email,
-                image_url: response.data.user.image_url,
-              }
-            })
-            console.log(auth)
-            setLoading(false);
-            setPopup(getSuddenSuccessPopup("Login!"));
-          } catch (error: any) {
-            if (error.status === 401) {
-              await registerUserData({
-                firebase_uid: result.user.uid,
-                name: result.user.displayName,
-                email: result.user.email,
-                image_url: result.user.photoURL,
-              });
-              setPopup(getSuddenSuccessPopup("Registered!"));
-            }
-            setLoading(false);
-          }
-        }).catch((error) => {
-          const credential = GoogleAuthProvider.credentialFromError(error);
-          console.log(credential)
-      });
+      signInWithRedirect(firebaseAuth, provider);
     }
 
-    const registerUserData = async (params: any) => {
-      const res = await axios.post(`/users/register`, params);
+    getRedirectResult(firebaseAuth)
+      .then(async (result) => {
+        if (!result) {return null;}
+        setLoading(true);
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        if (!credential) {
+          throw new Error("credential is null");
+        }
+        const idToken = await result.user.getIdToken();
+        await axios.get("/users/me", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }).then((res: AxiosResponse) => {
+          setAuth({
+            ...auth,
+            user: {
+              name: res.data.user.name,
+              email: res.data.user.email,
+              image_url: res.data.user.image_url,
+            }
+          })
+          setLoading(false);
+          setPopup(getSuddenSuccessPopup("Login!"));
+        }).catch(async (error: AxiosError) => {
+          if (error.response!.status === 401) {
+            await registerUserData(result.user);
+          } else {
+            setPopup(getSuddenErrorPopup("Error!"));
+          }
+          setLoading(false);
+        });
+      });
+
+    const registerUserData = async (user: any) => {
+      const res = await axios.post(`/users/register`, {
+        firebase_uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        image_url: user.photoURL,
+      }).then((res: AxiosResponse) => {
+        setPopup(getSuddenSuccessPopup("Registered!"));
+        // @todo マイページにリダイレクト
+      }).catch((error: AxiosError) => {
+        setPopup(getSuddenErrorPopup("Register Error!"));
+      });
     }
 
     return (

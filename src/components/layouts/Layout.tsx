@@ -17,6 +17,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import axios from "@/libs/axios"
 import useAuthAxios from "@/libs/useAuthAxios";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import { AxiosResponse, AxiosError } from 'axios'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -42,19 +43,22 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
     setLoading(true)
     if (user && Object.keys(auth).length === 0) {
       const idToken = await user.getIdToken(); // アクセストークンを取得
-      const res = await axios.get("/users/me", {
+      await axios.get("/users/me", {
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
+      }).then((res: AxiosResponse) => {
+        setAuth({
+          ...auth,
+          user: {
+            name: res.data.user.name,
+            email: res.data.user.email,
+            image_url: res.data.user.image_url,
+          }
+        })
+      }).catch(async (error: AxiosError) => {
+
       });
-      setAuth({
-        ...auth,
-        user: {
-          name: res.data.user.name,
-          email: res.data.user.email,
-          image_url: res.data.user.image_url,
-        }
-      })
     }
     setLoading(false)
   });
