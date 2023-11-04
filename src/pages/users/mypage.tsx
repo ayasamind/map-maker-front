@@ -8,9 +8,8 @@ import { Popup } from "@/contexts/PopupContext";
 import { GetServerSideProps } from "next";
 import { UserData } from '@/types/UserData';
 import { authAxios, errorHandler } from '@/libs/authAxios';
-import { requireAuthentication } from '@/middleware/auth';
 
-export const getServerSideProps: GetServerSideProps = requireAuthentication(async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const res = await authAxios(context).get(`users/me`);
     const userData: UserData = res.data.user
@@ -18,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = requireAuthentication(asyn
   } catch (error: any) {
     return errorHandler(error);
   }
-});
+};
 
 export default function Signin(userData: UserData) {
     const { setLoading } = useContext(Loading);

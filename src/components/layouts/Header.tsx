@@ -148,21 +148,16 @@ function Header() {
           >
             MapMaker
           </Typography>
-          { isLogin() &&
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                <Button
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                  onClick={() => router.push('/maps/create')}
-                >
-                    <Typography textAlign="center">
-                      New
-                    </Typography>
-                </Button>
-            </Box>
-          }
-          { !isLogin() &&
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}></Box>
-          }
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+              <Button
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                onClick={() => router.push('/maps/create')}
+              >
+                  <Typography textAlign="center">
+                    New
+                  </Typography>
+              </Button>
+          </Box>
           { isLogin() &&
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
