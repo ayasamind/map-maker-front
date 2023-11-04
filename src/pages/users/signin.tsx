@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useRouter } from 'next/router';
 import { Loading } from "@/contexts/LoadingContext";
 import { Auth } from "@/contexts/AuthContext";
 import Layout from "@/components/layouts/Layout";
@@ -17,6 +18,7 @@ export default function Signin() {
     const { setLoading } = useContext(Loading);
     const { auth, setAuth } = useContext(Auth);
     const { setPopup } = useContext(Popup);
+    const router = useRouter();
 
     const signInWithGoogle = async () => {
       setLoading(true);
@@ -66,7 +68,7 @@ export default function Signin() {
         image_url: user.photoURL,
       }).then((res: AxiosResponse) => {
         setPopup(getSuddenSuccessPopup("Registered!"));
-        // @todo マイページにリダイレクト
+        router.replace(`/users/mypage`);
       }).catch((error: AxiosError) => {
         setPopup(getSuddenErrorPopup("Register Error!"));
       });

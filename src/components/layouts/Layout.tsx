@@ -17,6 +17,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import axios from "@/libs/axios"
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { AxiosResponse, AxiosError } from 'axios'
+import nookies from 'nookies';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -56,6 +57,9 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
               Authorization: `Bearer ${idToken}`,
             },
           }).then((res: AxiosResponse) => {
+            if (router.asPath === "/users/signin") {
+              router.replace('/users/mypage');
+            }
             setAuth({
               ...auth,
               user: {
@@ -64,13 +68,16 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
                 image_url: res.data.user.image_url,
               }
             })
+            nookies.set(undefined, 'token', idToken, { path: '/' });
           }).catch(async (error: AxiosError) => {
-
+            nookies.set(undefined, 'token', '', { path: '/' });
           });
         }
         setLoading(false)
       });
     } catch (error) {
+      setLoading(false)
+      nookies.set(undefined, 'token', '', { path: '/' });
       throw error
     }
 

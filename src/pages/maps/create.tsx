@@ -12,6 +12,11 @@ import DefaultMap from '@/components/map/DefaultMap';
 import { MapFormParams } from '@/types/MapParams';
 import { defaultMapErrors } from '@/templates/ErrorTemplates';
 import Typography from '@mui/material/Typography';
+import { requireAuthentication } from '@/middleware/auth';
+
+export const getServerSideProps = requireAuthentication(async () => {
+  return { props: {}};
+});
 
 export default function CreateRecordForm() {
   const router = useRouter();

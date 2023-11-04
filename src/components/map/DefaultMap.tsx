@@ -118,7 +118,7 @@ export default function DefaultMap(props: any) {
         }
       }
     });
-  }, [formData, setMapState, markers, mapState.canAddPin, mapState.canEditPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams, index, updateFormData]);
+  }, [formData, setMapState, markers, mapState.canAddPin, mapState.canEditPin, handleMapChange, mapParams.center_lat, mapParams.center_lon, mapParams.pins, mapParams.zoom_level, mapParams, index, updateFormData, sendPinData]);
 
   return (
     <>

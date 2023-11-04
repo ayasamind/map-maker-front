@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,11 +15,12 @@ import MenuItem from '@mui/material/MenuItem';
 import EmojiFlags from '@mui/icons-material/EmojiFlags';
 import Link from "next/link";
 import { Auth } from "@/contexts/AuthContext";
-import { signOut, GoogleAuthProvider } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import firebaseAuth from '@/libs/firebaseAuth';
 import { Loading } from "@/contexts/LoadingContext";
 import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup } from "@/templates/PopupTemplates";
+import nookies from 'nookies';
 
 
 function Header() {
@@ -45,20 +46,24 @@ function Header() {
     setAnchorElUser(null);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     setLoading(true);
-    signOut(firebaseAuth)
+    await signOut(firebaseAuth)
       .then(() => {
-        console.log("Sign-out successful.");
         setAuth({});
         setLoading(false);
+        nookies.set(undefined, 'token', '', { path: '/' });
         setPopup(getSuccssPopup("Logout"));
         router.push('/');
       })
       .catch((err) => {
         setLoading(false);
-        console.log(err.message);
+        console.log(err);
       });
+  }
+
+  const isLogin = () => {
+    return Object.keys(auth).length !== 0;
   }
 
   return (
@@ -115,11 +120,13 @@ function Header() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              <MenuItem onClick={() => router.push('/maps/create')}>
-                <Typography textAlign="center">
-                  New
-                </Typography>
-              </MenuItem>
+              { isLogin() &&
+                <MenuItem onClick={() => router.push('/maps/create')}>
+                  <Typography textAlign="center">
+                    New
+                  </Typography>
+                </MenuItem>
+              }
             </Menu>
           </Box>
           <EmojiFlags sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} fontSize="large" />
@@ -141,18 +148,22 @@ function Header() {
           >
             MapMaker
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              <Button
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                onClick={() => router.push('/maps/create')}
-              >
-                  <Typography textAlign="center">
-                    New
-                  </Typography>
-              </Button>
-          </Box>
-
-           { Object.keys(auth).length !== 0 &&
+          { isLogin() &&
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                <Button
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  onClick={() => router.push('/maps/create')}
+                >
+                    <Typography textAlign="center">
+                      New
+                    </Typography>
+                </Button>
+            </Box>
+          }
+          { !isLogin() &&
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}></Box>
+          }
+          { isLogin() &&
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -175,18 +186,16 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {/* <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">
-                    <Link href={ `/users/signin` }>SignIn</Link>
-                  </Typography>
-                </MenuItem> */}
+                <MenuItem onClick={() => router.push('/users/mypage')}>
+                  <Typography textAlign="center">MyPage</Typography>
+                </MenuItem>
                 <MenuItem onClick={handleSignOut}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
               </Menu>
               </Box>
             }
-            { Object.keys(auth).length === 0 &&
+            { !isLogin() &&
               <Link color="white" href={ `/users/signin` }>
                   <Typography color="white" textAlign="center">SignIn</Typography>
               </Link>
