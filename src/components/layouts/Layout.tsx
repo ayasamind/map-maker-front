@@ -51,7 +51,6 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
         setLoading(true)
         if (user && Object.keys(auth).length === 0) {
           const idToken = await user.getIdToken();
-          console.log("onAuthStateChanged")
           await axios.get("/users/me", {
             headers: {
               Authorization: `Bearer ${idToken}`,
