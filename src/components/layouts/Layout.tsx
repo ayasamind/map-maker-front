@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useEffect, useState, useContext } from 'react';
+import React, { ReactNode, useEffect, useState, useContext } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Head, { HeadProps } from "@/components/layouts/Head";
 import { useRouter } from 'next/router';
@@ -15,7 +15,6 @@ import { AlertColor } from '@mui/material/Alert';
 import firebaseAuth from '@/libs/firebaseAuth';
 import { onAuthStateChanged } from "firebase/auth";
 import axios from "@/libs/axios"
-import useAuthAxios from "@/libs/useAuthAxios";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { AxiosResponse, AxiosError } from 'axios'
 
@@ -38,32 +37,6 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
   const { loading, setLoading } = useContext(Loading);
   const router = useRouter();
 
-  const authAxios = useAuthAxios();
-  onAuthStateChanged(firebaseAuth, async (user) => {
-    setLoading(true)
-    if (user && Object.keys(auth).length === 0) {
-      const idToken = await user.getIdToken(); // アクセストークンを取得
-      await axios.get("/users/me", {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      }).then((res: AxiosResponse) => {
-        setAuth({
-          ...auth,
-          user: {
-            name: res.data.user.name,
-            email: res.data.user.email,
-            image_url: res.data.user.image_url,
-          }
-        })
-      }).catch(async (error: AxiosError) => {
-
-      });
-    }
-    setLoading(false)
-  });
-
-
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -72,23 +45,52 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
     setPopupDisplay(defaultPopup);
   };
 
-  // ページ遷移が発生した際に実行されるコード
-  const routeChangeStart = (url: string) => {
-    setLoading(true);
-  };
-
-  // ページ遷移が発生した際に実行されるコード
-  const routeChangeComplete = (url: string) => {
-    setLoading(false);
-    if (popup.displayed) {
-      setPopup(defaultPopup);
-    } else if (popup.display) {
-      setPopupDisplay(popup);
-      setPopup(getDisplyedPopup(popup));
-    }
-  };
-
   useEffect(() => {
+    try {
+      onAuthStateChanged(firebaseAuth, async (user) => {
+        setLoading(true)
+        if (user && Object.keys(auth).length === 0) {
+          const idToken = await user.getIdToken();
+          console.log("onAuthStateChanged")
+          await axios.get("/users/me", {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }).then((res: AxiosResponse) => {
+            setAuth({
+              ...auth,
+              user: {
+                name: res.data.user.name,
+                email: res.data.user.email,
+                image_url: res.data.user.image_url,
+              }
+            })
+          }).catch(async (error: AxiosError) => {
+
+          });
+        }
+        setLoading(false)
+      });
+    } catch (error) {
+      throw error
+    }
+
+    // ページ遷移が発生した際に実行されるコード
+    const routeChangeStart = (url: string) => {
+      setLoading(true);
+    };
+
+    // ページ遷移が発生した際に実行されるコード
+    const routeChangeComplete = (url: string) => {
+      setLoading(false);
+      if (popup.displayed) {
+        setPopup(defaultPopup);
+      } else if (popup.display) {
+        setPopupDisplay(popup);
+        setPopup(getDisplyedPopup(popup));
+      }
+    };
+
     // ページ遷移を検知するリスナーを設定
     router.events.on('routeChangeStart',  routeChangeStart);
     router.events.on('routeChangeComplete',  routeChangeComplete);
@@ -98,7 +100,7 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
       router.events.off('routeChangeStart', routeChangeStart);
       router.events.off('routeChangeComplete', routeChangeComplete);
     };
-  });
+  }, [auth, setAuth, setLoading, router, popup, setPopup, setPopupDisplay]);
 
   return (
     <>
