@@ -18,8 +18,9 @@ import { Popup } from "@/contexts/PopupContext";
 import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
+import { requireAuthentication } from '@/middleware/auth';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = requireAuthentication(async (context) => {
   const id = context.params?.id
   if (!id) {
     return { notFound: true };
@@ -35,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
     throw error;
   }
-};
+});
 
 export default function ShowMap(mapParams: MapParams) {
   const router = useRouter();

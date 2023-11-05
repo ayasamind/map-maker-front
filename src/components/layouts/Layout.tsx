@@ -57,9 +57,6 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
               Authorization: `Bearer ${idToken}`,
             },
           }).then((res: AxiosResponse) => {
-            if (router.asPath === "/users/signin") {
-              router.replace('/users/mypage');
-            }
             setAuth({
               ...auth,
               user: {

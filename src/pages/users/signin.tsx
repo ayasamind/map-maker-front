@@ -8,11 +8,17 @@ import Image from 'next/image'
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { signInWithRedirect, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
 import axios from "@/libs/axios"
 import { Popup } from "@/contexts/PopupContext";
-import { getSuddenSuccessPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
+import { getSuccssPopup, getSuddenErrorPopup } from "@/templates/PopupTemplates";
 import { AxiosResponse, AxiosError } from 'axios'
+import { redirectIfAuthenticated } from '@/middleware/auth';
+import { GetServerSideProps } from "next";
+
+export const getServerSideProps: GetServerSideProps = redirectIfAuthenticated(async (context) => {
+  return { props: {}};
+});
 
 export default function Signin() {
     const { setLoading } = useContext(Loading);
@@ -23,10 +29,7 @@ export default function Signin() {
     const signInWithGoogle = async () => {
       setLoading(true);
       const provider = new GoogleAuthProvider();
-      signInWithRedirect(firebaseAuth, provider);
-    }
-
-    getRedirectResult(firebaseAuth)
+      signInWithPopup(firebaseAuth, provider)
       .then(async (result) => {
         if (!result) {return null;}
         setLoading(true);
@@ -49,7 +52,8 @@ export default function Signin() {
             }
           })
           setLoading(false);
-          setPopup(getSuddenSuccessPopup("Login!"));
+          setPopup(getSuccssPopup("Login!"));
+          router.push(`/users/mypage`);
         }).catch(async (error: AxiosError) => {
           if (error.response!.status === 401) {
             await registerUserData(result.user);
@@ -58,7 +62,11 @@ export default function Signin() {
           }
           setLoading(false);
         });
+      }).catch((error) => {
+        setPopup(getSuddenErrorPopup("Error!"));
+        setLoading(false);
       });
+    }
 
     const registerUserData = async (user: any) => {
       const res = await axios.post(`/users/register`, {

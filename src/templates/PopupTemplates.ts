@@ -2,7 +2,7 @@ const defaultPopup = {
     display: false,
     suddenDisplay: false,
     message: "",
-    type: "",
+    type: "success",
     displayed: false,
 }
 

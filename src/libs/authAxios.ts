@@ -4,6 +4,7 @@ import { GetServerSidePropsResult } from 'next';
 
 const authAxios = (context: any) => {
   const cookies = nookies.get(context);
+  console.log(cookies)
   if (!cookies.token) {
     return axios;
   }
