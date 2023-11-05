@@ -75,8 +75,8 @@ export default function Signin() {
         email: user.email,
         image_url: user.photoURL,
       }).then((res: AxiosResponse) => {
-        setPopup(getSuddenSuccessPopup("Registered!"));
-        router.replace(`/users/mypage`);
+        setPopup(getSuccssPopup("Registered!"));
+        router.push(`/users/mypage`);
       }).catch((error: AxiosError) => {
         setPopup(getSuddenErrorPopup("Register Error!"));
       });
